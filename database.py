@@ -2,9 +2,16 @@ import os
 import sqlalchemy as sa
 from sqlalchemy import text
 from datetime import datetime
+import streamlit as st
 
-# Reads connection string from Streamlit secrets
-DATABASE_URL = os.environ.get("DATABASE_URL", "")
+# Use individual params — avoids URL parsing issues with special chars
+DB_HOST = st.secrets["DB_HOST"]
+DB_NAME = st.secrets["DB_NAME"]
+DB_USER = st.secrets["DB_USER"]
+DB_PASS = st.secrets["DB_PASS"]
+DB_PORT = st.secrets["DB_PORT"]
+
+DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 engine = sa.create_engine(DATABASE_URL)
 
 
