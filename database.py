@@ -4,15 +4,14 @@ from sqlalchemy import text
 from datetime import datetime
 import streamlit as st
 
-# Use individual params — avoids URL parsing issues with special chars
 DB_HOST = st.secrets["DB_HOST"]
 DB_NAME = st.secrets["DB_NAME"]
 DB_USER = st.secrets["DB_USER"]
 DB_PASS = st.secrets["DB_PASS"]
 DB_PORT = st.secrets["DB_PORT"]
 
-DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
-engine = sa.create_engine(DATABASE_URL)
+DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}?sslmode=require"
+engine = sa.create_engine(DATABASE_URL, pool_pre_ping=True)
 
 
 def get_conn():
