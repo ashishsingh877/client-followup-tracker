@@ -2,6 +2,13 @@ import streamlit as st
 import json
 import os
 from datetime import datetime, date, timedelta
+from zoneinfo import ZoneInfo
+
+IST = ZoneInfo("Asia/Kolkata")
+
+def now_ist():
+    """Current datetime in IST (no tzinfo attached, for naive comparisons)."""
+    return datetime.now(IST).replace(tzinfo=None)
 
 # ── Page config ──────────────────────────────────────────────────────────────
 st.set_page_config(
@@ -58,12 +65,12 @@ st.markdown("""
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 def now_str():
-    return datetime.now().strftime("%Y-%m-%d %H:%M")
+    return now_ist().strftime("%Y-%m-%d %H:%M")
 
 def _is_overdue(fu):
     try:
         return (fu["status"] == "Pending" and
-                datetime.strptime(fu["datetime"], "%Y-%m-%d %H:%M") < datetime.now())
+                datetime.strptime(fu["datetime"], "%Y-%m-%d %H:%M") < now_ist())
     except Exception:
         return False
 
@@ -71,13 +78,13 @@ def _time_options():
     return [f"{h:02d}:{m:02d}" for h in range(24) for m in (0, 30)]
 
 def pending_count():
-    now = datetime.now()
+    now = now_ist()
     return sum(1 for f in data["followups"]
                if f["status"] == "Pending"
                and datetime.strptime(f["datetime"], "%Y-%m-%d %H:%M") >= now)
 
 def overdue_count():
-    now = datetime.now()
+    now = now_ist()
     return sum(1 for f in data["followups"]
                if f["status"] == "Pending"
                and datetime.strptime(f["datetime"], "%Y-%m-%d %H:%M") < now)
@@ -192,7 +199,7 @@ with st.sidebar:
 
     st.markdown(
         f"<div style='font-size:10px;color:#374151;margin-top:8px;'>"
-        f"{datetime.now().strftime('%A, %d %b %Y %H:%M')}</div>",
+        f"{now_ist().strftime('%A, %d %b %Y %H:%M')}</div>",
         unsafe_allow_html=True,
     )
 
@@ -210,7 +217,7 @@ if st.session_state.page == "Dashboard":
     c4.metric("Completed",     completed_count())
 
     st.markdown("---")
-    now = datetime.now()
+    now = now_ist()
 
     st.markdown("### Upcoming Follow-Ups")
     upcoming = sorted(
@@ -363,7 +370,7 @@ elif st.session_state.page == "Follow-Ups":
 
     st.markdown("---")
 
-    now = datetime.now()
+    now = now_ist()
 
     pending_fus   = [(i, f) for i, f in enumerate(data["followups"])
                      if f["status"] == "Pending"
