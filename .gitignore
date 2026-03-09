@@ -1,0 +1,5 @@
+client_tracker.db
+__pycache__/
+*.pyc
+.env
+*.sqlite
