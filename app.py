@@ -461,8 +461,20 @@ elif st.session_state.page=="Follow-Ups":
 
     tp,to,tc=st.tabs([f"⏳ Pending ({len(pf)})",f"🚨 Overdue ({len(of)})",f"✅ Completed ({len(cf)})"])
     with tp:
-        [render_followup_card(fu,idx) for idx,fu in pf] if pf else st.info("No pending follow-ups.")
+        if not pf:
+            st.info('No pending follow-ups.')
+        else:
+            for idx, fu in pf:
+                render_followup_card(fu, idx)
     with to:
-        [render_followup_card(fu,idx) for idx,fu in of] if of else st.success("No overdue! 🎉")
+        if not of:
+            st.success('No overdue! 🎉')
+        else:
+            for idx, fu in of:
+                render_followup_card(fu, idx)
     with tc:
-        [render_followup_card(fu,idx) for idx,fu in cf] if cf else st.info("No completed yet.")
+        if not cf:
+            st.info('No completed yet.')
+        else:
+            for idx, fu in cf:
+                render_followup_card(fu, idx)
